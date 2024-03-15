@@ -2,6 +2,7 @@ import 'package:expenses/widgets/chart/chart.dart';
 import 'package:expenses/widgets/expenses_list/expenses_list.dart';
 import 'package:expenses/models/expense.dart';
 import 'package:expenses/widgets/new_expense.dart';
+import 'package:expenses/widgets/update_expense.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
@@ -37,9 +38,27 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
+  void _openAddExpenseOverlayForUpdate(Expense expense, int index) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => UpdateExpense(
+        expense: expense,
+        index: index,
+        onUpdateExpense: _updateExpense,
+      ),
+    );
+  }
+
   void _addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
+    });
+  }
+
+  void _updateExpense(Expense expense, int expenseIndex) {
+    setState(() {
+      _registeredExpenses[expenseIndex] = expense;
     });
   }
 
@@ -78,6 +97,7 @@ class _ExpensesState extends State<Expenses> {
       mainContent = ExpensesList(
         expenses: _registeredExpenses,
         onRemoveExpense: _removeExpense,
+        onOpenAddExpenseOverlayForUpdate: _openAddExpenseOverlayForUpdate,
       );
     }
 

@@ -3,12 +3,17 @@ import 'package:expenses/widgets/expenses_list/expense_item.dart';
 import 'package:flutter/material.dart';
 
 class ExpensesList extends StatelessWidget {
-  const ExpensesList(
-      {super.key, required this.expenses, required this.onRemoveExpense});
+  const ExpensesList({
+    super.key,
+    required this.expenses,
+    required this.onRemoveExpense,
+    required this.onOpenAddExpenseOverlayForUpdate,
+  });
 
   final List<Expense> expenses;
 
   final void Function(Expense expense) onRemoveExpense;
+  final void Function(Expense expense, int index) onOpenAddExpenseOverlayForUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,12 @@ class ExpensesList extends StatelessWidget {
         onDismissed: (direction) {
           onRemoveExpense(expenses[index]);
         },
-        child: ExpenseItem(expenses[index]),
+        child: GestureDetector(
+          onDoubleTap: () {
+            onOpenAddExpenseOverlayForUpdate(expenses[index], index);
+          },
+          child: ExpenseItem(expenses[index]),
+        ),
       ),
     );
   }
