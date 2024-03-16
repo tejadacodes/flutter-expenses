@@ -1,3 +1,4 @@
+import 'package:expenses/storage.dart';
 import 'package:expenses/widgets/chart/chart.dart';
 import 'package:expenses/widgets/expenses_list/expenses_list.dart';
 import 'package:expenses/models/expense.dart';
@@ -15,7 +16,7 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registeredExpenses = [
+  List<Expense> _registeredExpenses = [
     // Expense(
     //   title: 'Flutter course',
     //   amount: 19.5,
@@ -29,6 +30,19 @@ class _ExpensesState extends State<Expenses> {
     //   category: Category.food,
     // ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadList();
+  }
+
+  Future<void> _loadList() async {
+    List<Expense> list = await StorageManager.getList();
+    setState(() {
+      _registeredExpenses = list;
+    });
+  }
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
@@ -50,19 +64,21 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  void _addExpense(Expense expense) {
+  void _addExpense(Expense expense) async {
     setState(() {
       _registeredExpenses.add(expense);
     });
+    await StorageManager.saveList(_registeredExpenses);
   }
 
-  void _updateExpense(Expense expense, int expenseIndex) {
+  void _updateExpense(Expense expense, int expenseIndex) async {
     setState(() {
       _registeredExpenses[expenseIndex] = expense;
     });
+    await StorageManager.saveList(_registeredExpenses);
   }
 
-  void _removeExpense(Expense expense) {
+  void _removeExpense(Expense expense) async {
     final expenseIndex = _registeredExpenses.indexOf(expense);
 
     setState(() {
@@ -85,6 +101,8 @@ class _ExpensesState extends State<Expenses> {
         ),
       ),
     );
+
+    await StorageManager.saveList(_registeredExpenses);
   }
 
   @override

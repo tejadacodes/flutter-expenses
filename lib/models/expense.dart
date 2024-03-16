@@ -15,6 +15,13 @@ const categoryIcons = {
   Category.work: Icons.work,
 };
 
+Category stringToEnum(String value) {
+  return Category.values.firstWhere(
+    (e) => e.toString().split('.').last == value,
+    orElse: () => Category.food,
+  );
+}
+
 class Expense {
   Expense({
     required this.title,
@@ -22,6 +29,14 @@ class Expense {
     required this.date,
     required this.category,
   }) : id = uuid.v4();
+
+  Expense.withId({
+    required this.id,
+    required this.title,
+    required this.amount,
+    required this.date,
+    required this.category,
+  });
 
   final String id;
   final String title;
@@ -35,6 +50,26 @@ class Expense {
 
   IconData? get expenseIcon {
     return categoryIcons[category];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'amount': amount,
+      'date': date.toIso8601String(),
+      'category': category.name,
+    };
+  }
+
+  factory Expense.fromMap(Map<String, dynamic> map) {
+    return Expense.withId(
+      id: map['id'],
+      title: map['title'],
+      amount: map['amount'],
+      date: DateTime.parse(map['date']),
+      category: stringToEnum(map['category']),
+    );
   }
 }
 
